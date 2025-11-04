@@ -538,7 +538,14 @@ const App = () => {
         {renderContent()}
       </main>
       <footer className="app-footer">
-        <p>&copy; 2024 وزارة التربية - قسم المستودعات</p>
+        <p>فكرة أ.أنور المعمري</p>
+        <p>إنشاء وتطوير حارث الغنبوصي</p>
+        <div className="footer-contact">
+            للتواصل: 
+            <a href="mailto:harith.qanbosi@gmail.com" aria-label="أرسل بريد إلكتروني">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </a>
+        </div>
       </footer>
     </>
   );

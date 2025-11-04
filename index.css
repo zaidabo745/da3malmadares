@@ -145,10 +145,34 @@ body {
 
 .app-footer {
   text-align: center;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   background-color: var(--dark-color);
   color: white;
   font-size: 0.9rem;
+  line-height: 1.6;
+}
+.app-footer p {
+    margin: 0.25rem 0;
+}
+
+.footer-contact {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+.footer-contact a {
+    color: white;
+    transition: color 0.2s;
+}
+.footer-contact a:hover {
+    color: var(--primary-color);
+}
+.footer-contact svg {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
 }
 
 /* Grid for Categories/Items */
