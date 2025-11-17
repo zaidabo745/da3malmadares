@@ -495,6 +495,23 @@ body {
     font-size: 1.1rem;
     text-align: center;
 }
+
+.inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.inventory-header h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
 .inventory-category {
     border: 1px solid #dee2e6;
     border-radius: var(--border-radius);

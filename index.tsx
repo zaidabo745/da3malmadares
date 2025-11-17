@@ -450,6 +450,12 @@ const App = () => {
       savePendingOrders(updatedOrders);
   };
   
+  const handleResetInventory = () => {
+    const initialInv = generateInitialInventory();
+    saveInventory(initialInv);
+    handleLogAction('إعادة تعيين المخزون', 'تم إعادة تعيين بيانات المخزون بالكامل إلى الحالة الأولية.');
+  };
+
   // Render logic
   const renderContent = () => {
     // If admin page is selected by a school user, redirect to main
@@ -496,6 +502,7 @@ const App = () => {
                     onSaveInventory={saveInventory}
                     adminLog={adminLog}
                     onLogAction={handleLogAction}
+                    onResetInventory={handleResetInventory}
                 />;
       case 'main':
       default:
@@ -1178,16 +1185,18 @@ const WarehouseKeepersAdmin = ({ keepers, onSaveKeepers, inventory, onLogAction 
     );
 };
 
-const InventoryAdmin = ({ inventory, onSaveInventory, onLogAction }: { 
+const InventoryAdmin = ({ inventory, onSaveInventory, onLogAction, onResetInventory }: { 
     inventory: Inventory, 
     onSaveInventory: (inv: Inventory) => void,
-    onLogAction: (action: string, details: string) => void
+    onLogAction: (action: string, details: string) => void,
+    onResetInventory: () => void
 }) => {
     const [newCategory, setNewCategory] = useState('');
     const [newItem, setNewItem] = useState({ category: '', name: '', quantity: '0' });
     const [editingStock, setEditingStock] = useState<Record<string, Record<string, string>>>({});
     const [editingCategory, setEditingCategory] = useState<{ oldName: string; newName: string } | null>(null);
     const [deletingTarget, setDeletingTarget] = useState<{ type: 'item' | 'category', category: string, item?: string } | null>(null);
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
     
     const handleUpdateStock = (category: string, item: string) => {
         const newStockStr = editingStock[category]?.[item];
@@ -1275,6 +1284,11 @@ const InventoryAdmin = ({ inventory, onSaveInventory, onLogAction }: {
         onSaveInventory(newInventory);
         setDeletingTarget(null);
     };
+    
+    const handleConfirmReset = () => {
+        onResetInventory();
+        setIsResetModalOpen(false);
+    };
 
     const handleDeleteItem = (category: string, item: string) => {
         setDeletingTarget({ type: 'item', category, item });
@@ -1354,7 +1368,13 @@ const InventoryAdmin = ({ inventory, onSaveInventory, onLogAction }: {
                 </form>
             </div>
             
-            <h3 style={{marginTop: '2rem'}}>المخزون الحالي</h3>
+            <div className="inventory-header">
+                <h3>المخزون الحالي</h3>
+                <button className="btn btn-secondary" onClick={() => setIsResetModalOpen(true)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '8px', verticalAlign: 'middle'}}><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L20.49 9M3.51 15l-2.02 2.64A9 9 0 0 0 18.49 22.36L20.49 15"></path></svg>
+                    تحديث البيانات من المصدر
+                </button>
+            </div>
              {categories.map(category => (
                 <details key={category} className="inventory-category" open>
                     <summary>
@@ -1436,6 +1456,14 @@ const InventoryAdmin = ({ inventory, onSaveInventory, onLogAction }: {
                     }
                 />
             )}
+            
+            <ConfirmationModal
+                isOpen={isResetModalOpen}
+                onClose={() => setIsResetModalOpen(false)}
+                onConfirm={handleConfirmReset}
+                title="تأكيد إعادة تعيين المخزون"
+                message="هل أنت متأكد؟ سيؤدي هذا إلى استبدال جميع بيانات المخزون الحالية بالبيانات الأولية من المصدر. سيتم فقدان جميع التعديلات اليدوية والإضافات."
+            />
         </div>
     );
 };
@@ -1472,13 +1500,14 @@ const AdminLogViewer = ({ logs }: { logs: AdminLog[] }) => {
     );
 };
 
-const AdminPanel = ({ keepers, onSaveKeepers, inventory, onSaveInventory, adminLog, onLogAction }: { 
+const AdminPanel = ({ keepers, onSaveKeepers, inventory, onSaveInventory, adminLog, onLogAction, onResetInventory }: { 
     keepers: Keeper[], 
     onSaveKeepers: (keepers: Keeper[]) => void, 
     inventory: Inventory, 
     onSaveInventory: (inv: Inventory) => void,
     adminLog: AdminLog[],
-    onLogAction: (action: string, details: string) => void
+    onLogAction: (action: string, details: string) => void,
+    onResetInventory: () => void
 }) => {
     const [activeTab, setActiveTab] = useState<'keepers' | 'inventory' | 'log'>('keepers');
 
@@ -1523,7 +1552,12 @@ const AdminPanel = ({ keepers, onSaveKeepers, inventory, onSaveInventory, adminL
                 )}
                 {activeTab === 'inventory' && (
                      <div id="inventory-panel" role="tabpanel" aria-labelledby="inventory-tab">
-                        <InventoryAdmin inventory={inventory} onSaveInventory={onSaveInventory} onLogAction={onLogAction} />
+                        <InventoryAdmin 
+                            inventory={inventory} 
+                            onSaveInventory={onSaveInventory} 
+                            onLogAction={onLogAction} 
+                            onResetInventory={onResetInventory} 
+                        />
                     </div>
                 )}
                  {activeTab === 'log' && (
